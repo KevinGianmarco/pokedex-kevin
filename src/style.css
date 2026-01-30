@@ -1,0 +1,496 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap");
+
+* {
+  font-family: "Poppins", sans-serif;
+  box-sizing: border-box;
+}
+
+:root {
+  /* TEMA CLARO */
+  --bg-color: #f4f4f4;
+  --card-bg: #ffffff;
+  --text-color: #333;
+  --text-secondary: #666;
+  --stats-bg: #f8f9fa;
+  --modal-overlay: rgba(0, 0, 0, 0.75);
+}
+
+/* TEMA OSCURO */
+body.dark-mode {
+  --bg-color: #121212;
+  --card-bg: #1e1e1e;
+  --text-color: #e0e0e0;
+  --text-secondary: #aaaaaa;
+  --stats-bg: #2c2c2c;
+  --modal-overlay: rgba(255, 255, 255, 0.1);
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  margin: 0;
+  transition:
+    background-color 0.3s,
+    color 0.3s;
+}
+
+/* --- HEADER & CONTROLES --- */
+header {
+  background-color: #ff3e3e;
+  color: white;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo {
+  width: 40px;
+  height: 40px;
+}
+
+.controls {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Botón de Tema (Luna/Sol) */
+.theme-btn {
+  background: none;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  color: white;
+  transition: all 0.3s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.theme-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: rotate(15deg);
+}
+
+.select-container select {
+  padding: 8px 12px;
+  border-radius: 20px;
+  border: none;
+  font-size: 0.9rem;
+  cursor: pointer;
+  background: white;
+  font-weight: bold;
+}
+
+#search-input {
+  padding: 8px 12px;
+  border-radius: 20px;
+  border: none;
+  font-size: 0.9rem;
+}
+
+/* AJUSTES MODO OSCURO HEADER */
+body.dark-mode .select-container select,
+body.dark-mode #search-input {
+  background-color: #2c2c2c;
+  color: white;
+  border: 1px solid #444;
+}
+
+/* --- GRID PRINCIPAL --- */
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 20px;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* --- TARJETAS --- */
+.card {
+  background: var(--card-bg);
+  border-radius: 15px;
+  padding: 15px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+  cursor: pointer;
+  border: 1px solid transparent;
+  position: relative;
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+body.dark-mode .card {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+  border: 1px solid #333;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+.card img {
+  width: 90px;
+  height: 90px;
+  image-rendering: pixelated;
+}
+
+.card h3 {
+  text-transform: capitalize;
+  margin: 10px 0 0;
+  font-size: 1rem;
+  color: var(--text-color);
+}
+
+/* --- BADGES (Etiquetas) --- */
+/* --- BADGES (Etiquetas de Tipo) --- */
+.types {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.type-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 4px 10px; /* Tamaño más controlado */
+  border-radius: 20px;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-transform: capitalize;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+
+  /* ✅ ESTO SOLUCIONA QUE SE VEAN GIGANTES: */
+  width: fit-content;
+  flex-grow: 0;
+  line-height: 1.2;
+}
+
+/* Aseguramos que la imagen del icono no rompa el tamaño */
+.type-badge img {
+  width: 14px;
+  height: 14px;
+  display: block; /* Ayuda a la alineación */
+}
+
+/* --- MODAL --- */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--modal-overlay);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(3px);
+  padding: 10px;
+}
+
+.modal-content {
+  background: var(--card-bg);
+  width: 100%;
+  max-width: 360px;
+  border-radius: 20px;
+  padding: 0;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* Fondo de color superior */
+.modal-top-bg {
+  width: 100%;
+  height: 160px; /* ✅ AUMENTADO (Antes 120px) para dar espacio a los botones */
+  display: flex;
+  justify-content: center;
+  align-items: flex-end; /* Alinea la imagen al fondo */
+  position: relative;
+  flex-shrink: 0;
+  padding-bottom: 0;
+}
+
+/* Imagen del Pokémon (Héroe) */
+.pokemon-hero-img {
+  width: 150px; /* Un poco más grande para que luzca mejor */
+  height: 150px;
+
+  /* ✅ ESTO BAJA LA IMAGEN: */
+  margin-bottom: -45px; /* Hacemos que "cuelgue" más hacia lo blanco */
+
+  z-index: 2;
+  filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.3)); /* Sombra más bonita */
+  transition: transform 0.3s ease;
+  image-rendering: pixelated;
+}
+
+/* Ajustamos el contenedor blanco para recibir la imagen más abajo */
+.modal-data-container {
+  background: var(--card-bg);
+
+  /* ✅ MÁS ESPACIO ARRIBA para que el texto no choque con la imagen */
+  padding: 60px 20px 20px 20px;
+
+  text-align: center;
+  border-radius: 30px 30px 0 0;
+  margin-top: -30px; /* Sube para conectar con el color */
+  z-index: 1;
+  flex-grow: 1;
+  transition: background-color 0.3s;
+}
+/* Botón Cerrar (X) */
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: rgba(255, 255, 255, 0.25);
+  color: white;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 10;
+  transition: background 0.2s;
+}
+.close-btn:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.pokemon-hero-img {
+  width: 130px;
+  height: 130px;
+  margin-bottom: -35px;
+  z-index: 2;
+  filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.2));
+  transition: transform 0.3s ease;
+  image-rendering: pixelated;
+}
+
+/* --- CONTENEDOR DE BOTONES DE ACCIÓN (Shiny / Mega) --- */
+/* --- BOTONES DE ACCIÓN (Shiny / Mega) --- */
+.action-buttons-container {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  display: flex;
+  gap: 10px;
+  z-index: 10;
+}
+
+.shiny-toggle,
+.mega-toggle {
+  position: relative;
+
+  /* ✅ CAMBIO: Fondo Blanco Sólido y Texto Oscuro */
+  background: white;
+  color: #333;
+
+  border: none; /* Quitamos el borde para que se vea más limpio */
+  padding: 6px 14px; /* Un poco más grandes */
+  border-radius: 20px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  font-weight: 800; /* Letra más gruesa para que se lea mejor */
+  transition: all 0.2s;
+
+  /* Sombra para que destaquen del fondo */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Hover: Se oscurecen un poquito */
+.shiny-toggle:hover,
+.mega-toggle:hover {
+  transform: translateY(-2px); /* Efecto de "levantarse" */
+  background: #f0f0f0;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* ESTADOS ACTIVOS (Cuando están encendidos) */
+
+/* Shiny Activo: Dorado */
+.shiny-toggle.active {
+  background: #f1c40f; /* Dorado intenso */
+  color: #000; /* Texto negro */
+  box-shadow: 0 0 15px rgba(241, 196, 15, 0.6); /* Resplandor dorado */
+}
+
+/* Mega Activo: Gradiente Morado */
+.mega-toggle.active {
+  background: linear-gradient(135deg, #a742f5, #f542bf);
+  color: white; /* Texto blanco aquí sí, porque el fondo es oscuro */
+  box-shadow: 0 0 15px rgba(245, 66, 191, 0.6); /* Resplandor rosa */
+}
+/* --- DATOS DEL POKÉMON --- */
+.modal-data-container {
+  background: var(--card-bg);
+  padding: 45px 20px 20px 20px;
+  text-align: center;
+  border-radius: 25px 25px 0 0;
+  margin-top: -20px;
+  z-index: 1;
+  flex-grow: 1;
+  transition: background-color 0.3s;
+}
+
+.modal-header-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 5px;
+}
+
+#modal-name {
+  font-size: 1.6rem;
+  margin: 0;
+  color: var(--text-color);
+  text-transform: capitalize;
+}
+
+#modal-id {
+  color: var(--text-secondary);
+  font-weight: 700;
+  font-size: 1rem;
+  display: block;
+  margin-bottom: 10px;
+}
+
+#modal-desc {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+/* Botón Sonido */
+.sound-button {
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: transform 0.2s;
+  padding: 0 5px;
+  color: var(--text-secondary);
+}
+.sound-button:hover {
+  transform: scale(1.1) rotate(-10deg);
+  color: #ff3e3e;
+}
+
+/* --- ESTADÍSTICAS --- */
+.stats-container {
+  background: var(--stats-bg);
+  padding: 15px;
+  border-radius: 15px;
+  text-align: left;
+}
+
+/* Estilos para cuando NO usas Chart.js (Barritas) */
+.stat-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+  font-size: 0.85rem;
+}
+.stat-label {
+  width: 70px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+.stat-num {
+  width: 30px;
+  text-align: right;
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: var(--text-color);
+  margin-right: 8px;
+}
+.stat-bar-bg {
+  flex-grow: 1;
+  background-color: var(--bg-color);
+  height: 6px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.stat-bar-fill {
+  height: 100%;
+  border-radius: 10px;
+  width: 0;
+  transition: width 1s ease-out;
+}
+
+/* --- BOTÓN FAVORITOS --- */
+.favorite-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(255, 255, 255, 0.6);
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition:
+    transform 0.2s,
+    background 0.2s;
+  z-index: 5;
+}
+.favorite-btn:hover {
+  transform: scale(1.2);
+  background: white;
+}
+.favorite-btn.active {
+  color: red;
+}
+
+/* --- ANIMACIONES --- */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
