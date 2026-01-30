@@ -253,25 +253,37 @@ body.dark-mode .card {
   flex-grow: 1;
   transition: background-color 0.3s;
 }
-
+/* Botón Cerrar (X) */
 .close-btn {
   position: absolute;
   top: 15px;
   right: 15px;
-  background: rgba(255, 255, 255, 0.25);
+
+  /* ✅ CAMBIO CLAVE: Fondo oscuro semi-transparente para contraste */
+  background: rgba(0, 0, 0, 0.3);
   color: white;
+
   border: none;
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   line-height: 1;
   cursor: pointer;
-  z-index: 10;
-  transition: background 0.2s;
+  z-index: 20;
+  transition: all 0.2s ease;
+
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
+
 .close-btn:hover {
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(0, 0, 0, 0.6);
+  transform: scale(1.1) rotate(90deg);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
 .pokemon-hero-img {
