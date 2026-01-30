@@ -4,7 +4,6 @@ const grid = document.getElementById("pokemon-grid");
 const selector = document.getElementById("gen-selector");
 const searchInput = document.getElementById("search-input");
 
-// --- Variables del Modal ---
 const modalOverlay = document.getElementById("modal-overlay");
 const modalName = document.getElementById("modal-name");
 const modalId = document.getElementById("modal-id");
@@ -13,16 +12,13 @@ const modalDesc = document.getElementById("modal-desc");
 const modalTypes = document.getElementById("modal-types");
 const modalStats = document.getElementById("modal-stats");
 
-// Referencias botones
 const modalTop = document.getElementById("modal-top");
 const shinyBtn = document.getElementById("btn-shiny");
-const megaBtn = document.getElementById("btn-mega"); // Puede ser null si falta en HTML
+const megaBtn = document.getElementById("btn-mega");
 const soundBtn = document.getElementById("btn-sound");
 
-// ESTADO GLOBAL
 let allPokemons = [];
 
-// --- DICCIONARIOS ---
 const typeColors = {
   fire: "#FDDFDF",
   grass: "#DEFDE0",
@@ -95,17 +91,15 @@ const statNames = {
   speed: "Velocidad",
 };
 
-// --- FAVORITOS (CORREGIDO: Manejo seguro del evento) ---
 function getFavorites() {
   const favorites = localStorage.getItem("pokeFavorites");
   return favorites ? JSON.parse(favorites) : [];
 }
 
-// Recibimos 'event' como tercer parámetro explícito
 function toggleFavorite(id, btnElement, event) {
   if (event) {
     event.stopPropagation();
-    event.preventDefault(); // Prevenir cualquier comportamiento extraño
+    event.preventDefault();
   }
 
   let favorites = getFavorites();
@@ -122,10 +116,9 @@ function toggleFavorite(id, btnElement, event) {
   }
   localStorage.setItem("pokeFavorites", JSON.stringify(favorites));
 }
-// Hacemos la función global
+
 window.toggleFavorite = toggleFavorite;
 
-// --- LÓGICA PRINCIPAL ---
 async function fetchGeneration(genId) {
   grid.innerHTML = '<div class="loader">Cargando...</div>';
   searchInput.value = "";
@@ -152,7 +145,6 @@ async function fetchGeneration(genId) {
         speciesData.flavor_text_entries.find((e) => e.language.name === "es") ||
         speciesData.flavor_text_entries.find((e) => e.language.name === "en");
 
-      // --- MEGA EVOLUCIONES (Soporte Múltiple) ---
       const megaVarieties = speciesData.varieties.filter((v) =>
         v.pokemon.name.includes("-mega"),
       );
@@ -213,7 +205,6 @@ function renderPokemons(list) {
       })
       .join("");
 
-    // ✅ CORRECCIÓN: Pasamos 'event' explícitamente en el onclick
     card.innerHTML = `
       <button class="favorite-btn ${isFav ? "active" : ""}" onclick="toggleFavorite(${poke.id}, this, event)">${isFav ? "❤️" : "🤍"}</button>
       <span style="opacity: 0.6; font-weight:bold;">#${poke.id}</span>
@@ -226,26 +217,22 @@ function renderPokemons(list) {
   });
 }
 
-// --- MODAL ---
 function openModal(poke, typesHtml, bgColor) {
   modalName.textContent = poke.name;
   modalId.textContent = `#${poke.id}`;
   modalImg.src = poke.image;
   modalDesc.textContent = poke.description;
   modalTypes.innerHTML = typesHtml;
-  // Validación por si modalTop es null
+
   if (modalTop) {
     modalTop.style.background = `linear-gradient(to bottom right, ${bgColor}, #ffffff)`;
   }
 
-  // GRÁFICO (Chart.js)
-  // Validación de Chart por si falla la carga del CDN
   if (typeof Chart !== "undefined") {
     let chartInstance = null;
     function drawChart(statsData) {
       const ctx = document.getElementById("statsChart").getContext("2d");
 
-      // Destruir gráfico anterior si existe para evitar superposiciones
       const existingChart = Chart.getChart("statsChart");
       if (existingChart) existingChart.destroy();
 
@@ -284,17 +271,14 @@ function openModal(poke, typesHtml, bgColor) {
     modalStats.innerHTML = '<canvas id="statsChart"></canvas>';
     drawChart(poke.stats);
 
-    // Variable local para Mega lógica
     var internalDrawChart = drawChart;
   } else {
     modalStats.innerHTML = "<p>Gráfico no disponible (Chart.js no cargó)</p>";
-    var internalDrawChart = () => {}; // Función vacía para no romper el código
+    var internalDrawChart = () => {};
   }
 
-  // --- LÓGICA MEGA EVOLUCIÓN (Rotativa) ---
-  let currentMegaIndex = -1; // -1 = Normal
+  let currentMegaIndex = -1;
 
-  // Validamos que megaBtn exista para evitar errores
   if (megaBtn) {
     if (poke.megas && poke.megas.length > 0) {
       megaBtn.style.display = "block";
@@ -309,19 +293,16 @@ function openModal(poke, typesHtml, bgColor) {
       if (currentMegaIndex >= poke.megas.length) currentMegaIndex = -1;
 
       if (currentMegaIndex === -1) {
-        // NORMAL
         modalImg.src = poke.image;
-        internalDrawChart(poke.stats); // Usamos la función interna segura
+        internalDrawChart(poke.stats);
         modalTypes.innerHTML = typesHtml;
         megaBtn.textContent = "🧬 Mega Evolución";
         megaBtn.classList.remove("active");
 
-        // Reset Shiny
         shinyBtn.textContent = "✨ Shiny: OFF";
         shinyBtn.classList.remove("active");
         esShiny = false;
       } else {
-        // MEGA
         const selectedMega = poke.megas[currentMegaIndex];
         modalImg.src = selectedMega.data.sprites.front_default;
         internalDrawChart(selectedMega.data.stats);
@@ -350,14 +331,12 @@ function openModal(poke, typesHtml, bgColor) {
     };
   }
 
-  // --- SHINY ---
   let esShiny = false;
   shinyBtn.textContent = "✨ Shiny: OFF";
   shinyBtn.classList.remove("active");
 
   shinyBtn.onclick = () => {
     if (esShiny) {
-      // APAGAR SHINY
       modalImg.src =
         currentMegaIndex === -1
           ? poke.image
@@ -366,7 +345,6 @@ function openModal(poke, typesHtml, bgColor) {
       shinyBtn.classList.remove("active");
       esShiny = false;
     } else {
-      // ENCENDER SHINY
       let shinyUrl;
       if (currentMegaIndex === -1) {
         shinyUrl = poke.shinyImage;
@@ -406,13 +384,3 @@ searchInput.addEventListener("input", (e) => {
 selector.addEventListener("change", (e) => fetchGeneration(e.target.value));
 
 fetchGeneration(1);
-
-// Dark Mode
-// const themeToggle = document.getElementById("theme-toggle");
-// if (themeToggle) {
-// Validación extra
-//  themeToggle.addEventListener("click", () => {
-//   document.body.classList.toggle("dark-mode");
-// themeToggle.textContent = document.body.classList.contains("dark-mode");
-// });
-// }

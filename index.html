@@ -104,7 +104,6 @@
         font-size: 2rem;
         text-transform: capitalize;
         font-weight: 700;
-        /* ✅ CORRECCIÓN: Usamos variables CSS en lugar de color fijo */
         color: var(--text-color);
       }
 
@@ -118,7 +117,6 @@
 
       .info-title {
         font-size: 0.9rem;
-        /* ✅ CORRECCIÓN: Usamos variables para que se vea en modo oscuro */
         color: var(--text-secondary);
         margin-bottom: 5px;
         text-transform: uppercase;
@@ -128,12 +126,10 @@
 
       #modal-desc {
         font-size: 0.95rem;
-        /* ✅ CORRECCIÓN: Usamos variables */
         color: var(--text-secondary);
         line-height: 1.6;
       }
 
-      /* Aseguramos que el contenedor de datos respete el fondo del tema */
       .modal-data-container {
         background-color: var(--card-bg);
         transition: background-color 0.3s;

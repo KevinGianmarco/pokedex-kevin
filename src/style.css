@@ -15,7 +15,6 @@
   --modal-overlay: rgba(0, 0, 0, 0.75);
 }
 
-/* TEMA OSCURO */
 body.dark-mode {
   --bg-color: #121212;
   --card-bg: #1e1e1e;
@@ -34,7 +33,6 @@ body {
     color 0.3s;
 }
 
-/* --- HEADER & CONTROLES --- */
 header {
   background-color: #ff3e3e;
   color: white;
@@ -67,7 +65,6 @@ header h1 {
   flex-wrap: wrap;
 }
 
-/* Botón de Tema (Luna/Sol) */
 .theme-btn {
   background: none;
   border: 2px solid rgba(255, 255, 255, 0.5);
@@ -104,7 +101,6 @@ header h1 {
   font-size: 0.9rem;
 }
 
-/* AJUSTES MODO OSCURO HEADER */
 body.dark-mode .select-container select,
 body.dark-mode #search-input {
   background-color: #2c2c2c;
@@ -112,7 +108,6 @@ body.dark-mode #search-input {
   border: 1px solid #444;
 }
 
-/* --- GRID PRINCIPAL --- */
 .grid-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -122,7 +117,6 @@ body.dark-mode #search-input {
   margin: 0 auto;
 }
 
-/* --- TARJETAS --- */
 .card {
   background: var(--card-bg);
   border-radius: 15px;
@@ -162,8 +156,6 @@ body.dark-mode .card {
   color: var(--text-color);
 }
 
-/* --- BADGES (Etiquetas) --- */
-/* --- BADGES (Etiquetas de Tipo) --- */
 .types {
   display: flex;
   flex-wrap: wrap;
@@ -177,7 +169,7 @@ body.dark-mode .card {
   align-items: center;
   justify-content: center;
   gap: 5px;
-  padding: 4px 10px; /* Tamaño más controlado */
+  padding: 4px 10px;
   border-radius: 20px;
   color: white;
   font-size: 0.75rem;
@@ -185,20 +177,17 @@ body.dark-mode .card {
   text-transform: capitalize;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 
-  /* ✅ ESTO SOLUCIONA QUE SE VEAN GIGANTES: */
   width: fit-content;
   flex-grow: 0;
   line-height: 1.2;
 }
 
-/* Aseguramos que la imagen del icono no rompa el tamaño */
 .type-badge img {
   width: 14px;
   height: 14px;
-  display: block; /* Ayuda a la alineación */
+  display: block;
 }
 
-/* --- MODAL --- */
 .modal-overlay {
   display: none;
   position: fixed;
@@ -229,47 +218,42 @@ body.dark-mode .card {
   overflow-y: auto;
 }
 
-/* Fondo de color superior */
 .modal-top-bg {
   width: 100%;
-  height: 160px; /* ✅ AUMENTADO (Antes 120px) para dar espacio a los botones */
+  height: 160px;
   display: flex;
   justify-content: center;
-  align-items: flex-end; /* Alinea la imagen al fondo */
+  align-items: flex-end;
   position: relative;
   flex-shrink: 0;
   padding-bottom: 0;
 }
 
-/* Imagen del Pokémon (Héroe) */
 .pokemon-hero-img {
-  width: 150px; /* Un poco más grande para que luzca mejor */
+  width: 150px;
   height: 150px;
 
-  /* ✅ ESTO BAJA LA IMAGEN: */
-  margin-bottom: -45px; /* Hacemos que "cuelgue" más hacia lo blanco */
+  margin-bottom: -45px;
 
   z-index: 2;
-  filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.3)); /* Sombra más bonita */
+  filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.3));
   transition: transform 0.3s ease;
   image-rendering: pixelated;
 }
 
-/* Ajustamos el contenedor blanco para recibir la imagen más abajo */
 .modal-data-container {
   background: var(--card-bg);
 
-  /* ✅ MÁS ESPACIO ARRIBA para que el texto no choque con la imagen */
   padding: 60px 20px 20px 20px;
 
   text-align: center;
   border-radius: 30px 30px 0 0;
-  margin-top: -30px; /* Sube para conectar con el color */
+  margin-top: -30px;
   z-index: 1;
   flex-grow: 1;
   transition: background-color 0.3s;
 }
-/* Botón Cerrar (X) */
+
 .close-btn {
   position: absolute;
   top: 15px;
@@ -300,8 +284,6 @@ body.dark-mode .card {
   image-rendering: pixelated;
 }
 
-/* --- CONTENEDOR DE BOTONES DE ACCIÓN (Shiny / Mega) --- */
-/* --- BOTONES DE ACCIÓN (Shiny / Mega) --- */
 .action-buttons-container {
   position: absolute;
   top: 15px;
@@ -315,46 +297,39 @@ body.dark-mode .card {
 .mega-toggle {
   position: relative;
 
-  /* ✅ CAMBIO: Fondo Blanco Sólido y Texto Oscuro */
   background: white;
   color: #333;
 
-  border: none; /* Quitamos el borde para que se vea más limpio */
-  padding: 6px 14px; /* Un poco más grandes */
+  border: none;
+  padding: 6px 14px;
   border-radius: 20px;
   font-size: 0.75rem;
   cursor: pointer;
-  font-weight: 800; /* Letra más gruesa para que se lea mejor */
+  font-weight: 800;
   transition: all 0.2s;
 
-  /* Sombra para que destaquen del fondo */
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
-/* Hover: Se oscurecen un poquito */
 .shiny-toggle:hover,
 .mega-toggle:hover {
-  transform: translateY(-2px); /* Efecto de "levantarse" */
+  transform: translateY(-2px);
   background: #f0f0f0;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
-/* ESTADOS ACTIVOS (Cuando están encendidos) */
-
-/* Shiny Activo: Dorado */
 .shiny-toggle.active {
-  background: #f1c40f; /* Dorado intenso */
-  color: #000; /* Texto negro */
-  box-shadow: 0 0 15px rgba(241, 196, 15, 0.6); /* Resplandor dorado */
+  background: #f1c40f;
+  color: #000;
+  box-shadow: 0 0 15px rgba(241, 196, 15, 0.6);
 }
 
-/* Mega Activo: Gradiente Morado */
 .mega-toggle.active {
   background: linear-gradient(135deg, #a742f5, #f542bf);
   color: white; /* Texto blanco aquí sí, porque el fondo es oscuro */
   box-shadow: 0 0 15px rgba(245, 66, 191, 0.6); /* Resplandor rosa */
 }
-/* --- DATOS DEL POKÉMON --- */
+
 .modal-data-container {
   background: var(--card-bg);
   padding: 45px 20px 20px 20px;
@@ -396,7 +371,6 @@ body.dark-mode .card {
   margin-bottom: 20px;
 }
 
-/* Botón Sonido */
 .sound-button {
   background: none;
   border: none;
@@ -411,7 +385,6 @@ body.dark-mode .card {
   color: #ff3e3e;
 }
 
-/* --- ESTADÍSTICAS --- */
 .stats-container {
   background: var(--stats-bg);
   padding: 15px;
@@ -419,7 +392,6 @@ body.dark-mode .card {
   text-align: left;
 }
 
-/* Estilos para cuando NO usas Chart.js (Barritas) */
 .stat-row {
   display: flex;
   align-items: center;
@@ -455,7 +427,6 @@ body.dark-mode .card {
   transition: width 1s ease-out;
 }
 
-/* --- BOTÓN FAVORITOS --- */
 .favorite-btn {
   position: absolute;
   top: 10px;
@@ -483,7 +454,6 @@ body.dark-mode .card {
   color: red;
 }
 
-/* --- ANIMACIONES --- */
 @keyframes fadeInUp {
   from {
     opacity: 0;
