@@ -408,13 +408,11 @@ selector.addEventListener("change", (e) => fetchGeneration(e.target.value));
 fetchGeneration(1);
 
 // Dark Mode
-const themeToggle = document.getElementById("theme-toggle");
-if (themeToggle) {
-  // Validación extra
-  themeToggle.addEventListener("click", () => {
-    document.body.classList.toggle("dark-mode");
-    themeToggle.textContent = document.body.classList.contains("dark-mode")
-      ? "☀️"
-      : "🌙";
-  });
-}
+// const themeToggle = document.getElementById("theme-toggle");
+// if (themeToggle) {
+// Validación extra
+//  themeToggle.addEventListener("click", () => {
+//   document.body.classList.toggle("dark-mode");
+// themeToggle.textContent = document.body.classList.contains("dark-mode");
+// });
+// }
