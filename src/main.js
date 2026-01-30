@@ -217,6 +217,7 @@ function renderPokemons(list) {
   });
 }
 
+// --- MODAL ---
 function openModal(poke, typesHtml, bgColor) {
   modalName.textContent = poke.name;
   modalId.textContent = `#${poke.id}`;
@@ -228,11 +229,11 @@ function openModal(poke, typesHtml, bgColor) {
     modalTop.style.background = `linear-gradient(to bottom right, ${bgColor}, #ffffff)`;
   }
 
+  // GRÁFICO
   if (typeof Chart !== "undefined") {
     let chartInstance = null;
     function drawChart(statsData) {
       const ctx = document.getElementById("statsChart").getContext("2d");
-
       const existingChart = Chart.getChart("statsChart");
       if (existingChart) existingChart.destroy();
 
@@ -270,14 +271,39 @@ function openModal(poke, typesHtml, bgColor) {
     }
     modalStats.innerHTML = '<canvas id="statsChart"></canvas>';
     drawChart(poke.stats);
-
     var internalDrawChart = drawChart;
   } else {
-    modalStats.innerHTML = "<p>Gráfico no disponible (Chart.js no cargó)</p>";
+    modalStats.innerHTML = "<p>Gráfico no disponible</p>";
     var internalDrawChart = () => {};
   }
 
   let currentMegaIndex = -1;
+  let esShiny = false;
+
+  function getCurrentImage() {
+    if (currentMegaIndex === -1) {
+      if (esShiny) return poke.shinyImage || poke.image;
+      return poke.image;
+    }
+
+    const megaData = poke.megas[currentMegaIndex].data;
+    const sprites = megaData.sprites;
+
+    if (esShiny) {
+      return (
+        sprites.other?.home?.front_shiny ||
+        sprites.front_shiny ||
+        sprites.other?.["official-artwork"]?.front_default ||
+        sprites.front_default
+      );
+    } else {
+      return (
+        sprites.other?.["official-artwork"]?.front_default ||
+        sprites.front_default ||
+        poke.image
+      );
+    }
+  }
 
   if (megaBtn) {
     if (poke.megas && poke.megas.length > 0) {
@@ -293,18 +319,13 @@ function openModal(poke, typesHtml, bgColor) {
       if (currentMegaIndex >= poke.megas.length) currentMegaIndex = -1;
 
       if (currentMegaIndex === -1) {
-        modalImg.src = poke.image;
-        internalDrawChart(poke.stats);
         modalTypes.innerHTML = typesHtml;
+        internalDrawChart(poke.stats);
+
         megaBtn.textContent = "🧬 Mega Evolución";
         megaBtn.classList.remove("active");
-
-        shinyBtn.textContent = "✨ Shiny: OFF";
-        shinyBtn.classList.remove("active");
-        esShiny = false;
       } else {
         const selectedMega = poke.megas[currentMegaIndex];
-        modalImg.src = selectedMega.data.sprites.front_default;
         internalDrawChart(selectedMega.data.stats);
 
         const megaTypesHtml = selectedMega.data.types
@@ -318,45 +339,32 @@ function openModal(poke, typesHtml, bgColor) {
           .join("");
         modalTypes.innerHTML = megaTypesHtml;
 
+        // Texto Botón
         let btnText = "Mega";
         if (selectedMega.name.includes("-x")) btnText = "Mega X 🔵";
         if (selectedMega.name.includes("-y")) btnText = "Mega Y 🔴";
         megaBtn.textContent = `🧬 ${btnText}`;
         megaBtn.classList.add("active");
-
-        shinyBtn.textContent = "✨ Shiny: OFF";
-        shinyBtn.classList.remove("active");
-        esShiny = false;
       }
+
+      modalImg.src = getCurrentImage();
     };
   }
 
-  let esShiny = false;
   shinyBtn.textContent = "✨ Shiny: OFF";
   shinyBtn.classList.remove("active");
 
   shinyBtn.onclick = () => {
+    esShiny = !esShiny;
     if (esShiny) {
-      modalImg.src =
-        currentMegaIndex === -1
-          ? poke.image
-          : poke.megas[currentMegaIndex].data.sprites.front_default;
-      shinyBtn.textContent = "✨ Shiny: OFF";
-      shinyBtn.classList.remove("active");
-      esShiny = false;
-    } else {
-      let shinyUrl;
-      if (currentMegaIndex === -1) {
-        shinyUrl = poke.shinyImage;
-      } else {
-        const sprites = poke.megas[currentMegaIndex].data.sprites;
-        shinyUrl = sprites.front_shiny || sprites.front_default;
-      }
-      modalImg.src = shinyUrl;
       shinyBtn.textContent = "🌟 Shiny: ON";
       shinyBtn.classList.add("active");
-      esShiny = true;
+    } else {
+      shinyBtn.textContent = "✨ Shiny: OFF";
+      shinyBtn.classList.remove("active");
     }
+
+    modalImg.src = getCurrentImage();
   };
 
   soundBtn.onclick = () => {
@@ -372,7 +380,6 @@ window.closeModal = function () {
   modalOverlay.style.display = "none";
 };
 
-// --- EVENTOS ---
 searchInput.addEventListener("input", (e) => {
   const query = e.target.value.toLowerCase();
   const filtered = allPokemons.filter(
