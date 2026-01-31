@@ -17,19 +17,22 @@
   <body>
     <div id="app">
       <header>
-        <img
-          src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png"
-          alt="Pokeball"
-          class="logo"
-        />
+       <div class="pokeballs-container">
+         <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" class="poke-icon" alt="Pokéball" title="Pokéball">
+         <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/great-ball.png" class="poke-icon" alt="Superball" title="Superball">
+         <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png" class="poke-icon" alt="Ultraball" title="Ultraball">
+         <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/master-ball.png" class="poke-icon" alt="Masterball" title="Masterball">
+       </div>
         <h1>Pokédex Kevin</h1>
 
         <div class="controls">
           <input
             type="text"
             id="search-input"
-            placeholder="🔍 Buscar Pokémon..."
+            placeholder=" Buscar Pokémon..."
           />
+<button id="btn-random" class="random-btn" title="¡Pokémon Aleatorio!">🎲</button>
+          <button id="btn-game" class="game-launcher">¿Quién es este Pokemón?</button>
 
           <div class="select-container">
             <label for="gen-selector">Región:</label>
@@ -38,6 +41,12 @@
               <option value="2">Johto (Gen 2)</option>
               <option value="3">Hoenn (Gen 3)</option>
               <option value="4">Sinnoh (Gen 4)</option>
+              <option value="5">Teselia (Gen 5)</option>
+              <option value="6">Kalos (Gen 6)</option>
+              <option value="7">Alola  (Gen 7)</option>
+              <option value="8">Galar (Gen 8)</option>
+              <option value="9">Paldea (Gen 9)</option>
+              
             </select>
           </div>
         </div>
@@ -78,6 +87,14 @@
             class="types"
             style="justify-content: center; margin-bottom: 20px"
           ></div>
+
+          <div
+            id="modal-types"
+            class="types"
+            style="justify-content: center; margin-bottom: 20px"
+          ></div>
+
+          <div id="modal-gender" class="gender-container"></div>
 
           <h3 class="info-title">Sobre el Pokémon</h3>
           <p id="modal-desc">...</p>
@@ -135,5 +152,36 @@
         transition: background-color 0.3s;
       }
     </style>
+    <div class="team-dock">
+  <div class="team-header">
+    <div class="team-title-wrapper">
+        <input type="text" id="team-name" value="Mi Equipo" maxlength="15" placeholder="Nombre del Equipo">
+        <span id="team-count">0/6</span>
+    </div>
+
+    <button onclick="clearTeam()" class="clear-btn">Limpiar</button>
+</div>
+  <div class="team-slots" id="team-slots">
+    </div>
+</div>
+
+<script type="module" src="/src/main.js"></script>
+</body>
+<div id="game-overlay" class="modal-overlay">
+  <div class="game-card">
+    <button class="close-btn" onclick="closeGame()">×</button>
+    <h2 class="game-title">¿Quién es ese Pokémon?</h2>
+    
+    <div class="game-image-container">
+      <img id="game-img" src="" alt="Pokemon Oculto" class="silhouette">
+    </div>
+
+    <div id="game-options" class="game-options">
+      </div>
+
+    <p id="game-message" class="game-message"></p>
+    <button id="btn-next-round" class="next-round-btn" onclick="initGame()" style="display:none;">Siguiente ▶</button>
+  </div>
+</div>
   </body>
 </html>

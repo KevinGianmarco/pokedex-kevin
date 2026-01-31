@@ -4,6 +4,7 @@ const grid = document.getElementById("pokemon-grid");
 const selector = document.getElementById("gen-selector");
 const searchInput = document.getElementById("search-input");
 
+// --- Variables del Modal ---
 const modalOverlay = document.getElementById("modal-overlay");
 const modalName = document.getElementById("modal-name");
 const modalId = document.getElementById("modal-id");
@@ -11,14 +12,18 @@ const modalImg = document.getElementById("modal-img");
 const modalDesc = document.getElementById("modal-desc");
 const modalTypes = document.getElementById("modal-types");
 const modalStats = document.getElementById("modal-stats");
+const modalGender = document.getElementById("modal-gender"); // ✅ REFERENCIA NUEVA
 
+// Referencias botones
 const modalTop = document.getElementById("modal-top");
 const shinyBtn = document.getElementById("btn-shiny");
 const megaBtn = document.getElementById("btn-mega");
 const soundBtn = document.getElementById("btn-sound");
 
+// ESTADO GLOBAL
 let allPokemons = [];
 
+// --- DICCIONARIOS ---
 const typeColors = {
   fire: "#FDDFDF",
   grass: "#DEFDE0",
@@ -91,6 +96,7 @@ const statNames = {
   speed: "Velocidad",
 };
 
+// --- FAVORITOS ---
 function getFavorites() {
   const favorites = localStorage.getItem("pokeFavorites");
   return favorites ? JSON.parse(favorites) : [];
@@ -116,9 +122,119 @@ function toggleFavorite(id, btnElement, event) {
   }
   localStorage.setItem("pokeFavorites", JSON.stringify(favorites));
 }
-
 window.toggleFavorite = toggleFavorite;
 
+// --- LÓGICA DE EQUIPO (TEAM BUILDER) ---
+let myTeam = JSON.parse(localStorage.getItem("myTeam")) || [];
+
+// ... (Debajo de let myTeam = ...)
+
+// --- LÓGICA DEL NOMBRE DEL EQUIPO ---
+const teamNameInput = document.getElementById("team-name");
+
+// 1. Cargar nombre guardado (o usar "Mi Equipo" por defecto)
+const savedTeamName = localStorage.getItem("pokeTeamName");
+if (savedTeamName) {
+  teamNameInput.value = savedTeamName;
+}
+
+// 2. Guardar automáticamente cuando el usuario escribe
+teamNameInput.addEventListener("input", (e) => {
+  localStorage.setItem("pokeTeamName", e.target.value);
+});
+
+function updateTeamUI() {
+  const container = document.getElementById("team-slots");
+  const countSpan = document.getElementById("team-count");
+  container.innerHTML = "";
+
+  // Dibujamos siempre 6 huecos (llenos o vacíos)
+  for (let i = 0; i < 6; i++) {
+    const member = myTeam[i];
+    const slot = document.createElement("div");
+    slot.className = "team-slot";
+
+    if (member) {
+      // Slot Lleno
+      slot.innerHTML = `
+        <img src="${member.image}" alt="${member.name}">
+        <div class="slot-remove" onclick="removeFromTeam(${i})">✕</div>
+      `;
+      slot.style.borderColor = "#4CAF50"; // Verde si está lleno
+      slot.onclick = (e) => {
+        // Evitar que se active al dar click en la X
+        if (e.target.className !== "slot-remove") openModal(member, "", "#fff");
+      };
+    } else {
+      // Slot Vacío
+      slot.innerHTML = `<span style="opacity:0.3; font-size:20px;">+</span>`;
+    }
+    container.appendChild(slot);
+  }
+
+  countSpan.textContent = `${myTeam.length}/6`;
+  localStorage.setItem("myTeam", JSON.stringify(myTeam));
+
+  // Actualizamos los botones de la grilla para que se bloqueen si ya está añadido
+  renderPokemons(allPokemons);
+}
+
+// --- LÓGICA DE EQUIPO ---
+
+// ... (tu variable myTeam y updateTeamUI siguen igual) ...
+
+function addToTeam(pokemonId, event) {
+  // <--- Cambio 1: Recibe ID
+  if (event) {
+    event.stopPropagation();
+    event.preventDefault(); // Evita que la página salte
+  }
+
+  // Buscamos el Pokémon en la lista completa usando el ID
+  const poke = allPokemons.find((p) => p.id === pokemonId);
+
+  if (!poke) return; // Seguridad por si no lo encuentra
+
+  if (myTeam.length >= 6) {
+    alert("¡Tu equipo está lleno! (Máx 6)");
+    return;
+  }
+
+  if (myTeam.some((p) => p.id === poke.id)) {
+    alert("Este Pokémon ya está en tu equipo.");
+    return;
+  }
+
+  const teamMember = {
+    id: poke.id,
+    name: poke.name,
+    image: poke.image,
+    stats: poke.stats,
+    types: poke.types,
+    description: poke.description,
+  };
+
+  myTeam.push(teamMember);
+  updateTeamUI();
+}
+
+// ✅ IMPORTANTE: HACERLAS PÚBLICAS PARA EL HTML
+window.addToTeam = addToTeam;
+window.removeFromTeam = function (index) {
+  myTeam.splice(index, 1);
+  updateTeamUI();
+};
+window.clearTeam = function () {
+  if (confirm("¿Borrar todo el equipo?")) {
+    myTeam = [];
+    updateTeamUI();
+  }
+};
+
+// Inicializamos la barra al cargar
+updateTeamUI();
+
+// --- LÓGICA PRINCIPAL ---
 async function fetchGeneration(genId) {
   grid.innerHTML = '<div class="loader">Cargando...</div>';
   searchInput.value = "";
@@ -145,6 +261,7 @@ async function fetchGeneration(genId) {
         speciesData.flavor_text_entries.find((e) => e.language.name === "es") ||
         speciesData.flavor_text_entries.find((e) => e.language.name === "en");
 
+      // --- MEGA EVOLUCIONES (Filtro Estricto) ---
       const megaVarieties = speciesData.varieties.filter((v) =>
         v.pokemon.name.includes("-mega"),
       );
@@ -168,6 +285,7 @@ async function fetchGeneration(genId) {
           : "Sin descripción.",
         stats: pokemonData.stats,
         sound: pokemonData.cries.latest,
+        genderRate: speciesData.gender_rate, // ✅ DATO DE GÉNERO CORRECTO
         megas: megasData,
       };
     });
@@ -177,8 +295,8 @@ async function fetchGeneration(genId) {
     allPokemons = results;
     renderPokemons(allPokemons);
   } catch (error) {
-    console.error("Error:", error);
-    grid.innerHTML = "<p>Error cargando datos.</p>";
+    console.error("Error cargando:", error);
+    grid.innerHTML = "<p>Error cargando datos. Revisa la consola (F12).</p>";
   }
 }
 
@@ -205,13 +323,36 @@ function renderPokemons(list) {
       })
       .join("");
 
+    // ... dentro del bucle de renderPokemons ...
+
+    // Verificamos si ya está en el equipo para deshabilitar el botón
+    const isInTeam = myTeam.some((p) => p.id === poke.id);
+    const teamBtnText = isInTeam ? "En equipo ✅" : "Añadir +";
+    const disabledAttr = isInTeam ? "disabled" : "";
+    // ... dentro de renderPokemons ...
+
+    // CAMBIAR ESTA PARTE:
+    // Antes era: onclick="addToTeam(allPokemons.find(...))"
+    // AHORA ES MÁS SIMPLE:
+
     card.innerHTML = `
-      <button class="favorite-btn ${isFav ? "active" : ""}" onclick="toggleFavorite(${poke.id}, this, event)">${isFav ? "❤️" : "🤍"}</button>
-      <span style="opacity: 0.6; font-weight:bold;">#${poke.id}</span>
+      <div style="display:flex; justify-content:space-between;">
+          <button class="favorite-btn ${isFav ? "active" : ""}" onclick="toggleFavorite(${poke.id}, this, event)">${isFav ? "❤️" : "🤍"}</button>
+          <span style="opacity: 0.6; font-weight:bold;">#${poke.id}</span>
+      </div>
+      
       <img src="${poke.image}" alt="${poke.name}" loading="lazy">
       <h3>${poke.name}</h3>
       <div class="types">${typesHtml}</div>
+      
+      <button class="add-team-btn" ${disabledAttr} onclick="addToTeam(${poke.id}, event)">
+        ${teamBtnText}
+      </button>
     `;
+
+    // ... resto del código ...
+
+    // ... resto del código ...
     card.addEventListener("click", () => openModal(poke, typesHtml, bgColor));
     grid.appendChild(card);
   });
@@ -229,6 +370,33 @@ function openModal(poke, typesHtml, bgColor) {
     modalTop.style.background = `linear-gradient(to bottom right, ${bgColor}, #ffffff)`;
   }
 
+  // --- LÓGICA DE GÉNERO (VISUAL) ---
+  if (modalGender) {
+    let genderHtml = "";
+    const rate = poke.genderRate;
+
+    if (rate === -1) {
+      // Caso: Sin Género (Magnemite)
+      genderHtml = `<span class="gender-less-badge">Sin Género</span>`;
+    } else {
+      // Calculamos porcentajes
+      const femalePercent = (rate / 8) * 100;
+      const malePercent = 100 - femalePercent;
+
+      // Renderizamos: Texto arriba + Barra abajo
+      genderHtml = `
+          <div class="gender-text">
+            <span class="male-text">♂ ${malePercent}%</span>
+            <span class="female-text">♀ ${femalePercent}%</span>
+          </div>
+          <div class="gender-bar">
+            <div class="bar-male" style="width: ${malePercent}%"></div>
+            <div class="bar-female" style="width: ${femalePercent}%"></div>
+          </div>
+        `;
+    }
+    modalGender.innerHTML = genderHtml;
+  }
   // GRÁFICO
   if (typeof Chart !== "undefined") {
     let chartInstance = null;
@@ -277,7 +445,8 @@ function openModal(poke, typesHtml, bgColor) {
     var internalDrawChart = () => {};
   }
 
-  let currentMegaIndex = -1;
+  // --- LÓGICA MEGA EVOLUCIÓN ---
+  let currentMegaIndex = -1; // -1 = Normal
   let esShiny = false;
 
   function getCurrentImage() {
@@ -285,11 +454,11 @@ function openModal(poke, typesHtml, bgColor) {
       if (esShiny) return poke.shinyImage || poke.image;
       return poke.image;
     }
-
     const megaData = poke.megas[currentMegaIndex].data;
     const sprites = megaData.sprites;
 
     if (esShiny) {
+      // Fallback inteligente para Mega Shiny
       return (
         sprites.other?.home?.front_shiny ||
         sprites.front_shiny ||
@@ -319,15 +488,17 @@ function openModal(poke, typesHtml, bgColor) {
       if (currentMegaIndex >= poke.megas.length) currentMegaIndex = -1;
 
       if (currentMegaIndex === -1) {
+        // NORMAL
         modalTypes.innerHTML = typesHtml;
         internalDrawChart(poke.stats);
-
         megaBtn.textContent = "🧬 Mega Evolución";
         megaBtn.classList.remove("active");
       } else {
+        // MEGA
         const selectedMega = poke.megas[currentMegaIndex];
         internalDrawChart(selectedMega.data.stats);
 
+        // Tipos Mega
         const megaTypesHtml = selectedMega.data.types
           .map((t) => {
             const type = t.type.name;
@@ -339,18 +510,17 @@ function openModal(poke, typesHtml, bgColor) {
           .join("");
         modalTypes.innerHTML = megaTypesHtml;
 
-        // Texto Botón
         let btnText = "Mega";
         if (selectedMega.name.includes("-x")) btnText = "Mega X 🔵";
         if (selectedMega.name.includes("-y")) btnText = "Mega Y 🔴";
         megaBtn.textContent = `🧬 ${btnText}`;
         megaBtn.classList.add("active");
       }
-
       modalImg.src = getCurrentImage();
     };
   }
 
+  // --- LÓGICA SHINY ---
   shinyBtn.textContent = "✨ Shiny: OFF";
   shinyBtn.classList.remove("active");
 
@@ -363,7 +533,6 @@ function openModal(poke, typesHtml, bgColor) {
       shinyBtn.textContent = "✨ Shiny: OFF";
       shinyBtn.classList.remove("active");
     }
-
     modalImg.src = getCurrentImage();
   };
 
@@ -380,6 +549,7 @@ window.closeModal = function () {
   modalOverlay.style.display = "none";
 };
 
+// --- EVENTOS ---
 searchInput.addEventListener("input", (e) => {
   const query = e.target.value.toLowerCase();
   const filtered = allPokemons.filter(
@@ -391,3 +561,170 @@ searchInput.addEventListener("input", (e) => {
 selector.addEventListener("change", (e) => fetchGeneration(e.target.value));
 
 fetchGeneration(1);
+
+// Dark Mode
+const themeToggle = document.getElementById("theme-toggle");
+if (themeToggle) {
+  themeToggle.addEventListener("click", () => {
+    document.body.classList.toggle("dark-mode");
+    themeToggle.textContent = document.body.classList.contains("dark-mode")
+      ? "☀️"
+      : "🌙";
+  });
+}
+
+// --- LÓGICA DEL MINIJUEGO ---
+const gameOverlay = document.getElementById("game-overlay");
+const gameImg = document.getElementById("game-img");
+const gameOptions = document.getElementById("game-options");
+const gameMessage = document.getElementById("game-message");
+const nextRoundBtn = document.getElementById("btn-next-round");
+const btnGame = document.getElementById("btn-game");
+
+let correctAnswer = null;
+
+// Abrir juego
+if (btnGame) {
+  btnGame.addEventListener("click", () => {
+    gameOverlay.style.display = "flex";
+    initGame();
+  });
+}
+
+window.closeGame = function () {
+  gameOverlay.style.display = "none";
+};
+
+// Iniciar Ronda
+window.initGame = function () {
+  // Limpiamos estado anterior
+  gameMessage.textContent = "";
+  nextRoundBtn.style.display = "none";
+  gameImg.classList.add("silhouette"); // Ponemos la silueta negra
+  gameOptions.innerHTML = "";
+
+  // 1. Elegir Pokémon Correcto (Random)
+  const randomIndex = Math.floor(Math.random() * allPokemons.length);
+  correctAnswer = allPokemons[randomIndex];
+
+  // Asignar imagen
+  gameImg.src = correctAnswer.image;
+
+  // 2. Elegir 3 Incorrectos (Distintos al correcto)
+  let options = [correctAnswer];
+
+  while (options.length < 4) {
+    const randomWrong =
+      allPokemons[Math.floor(Math.random() * allPokemons.length)];
+    // Evitar repetidos
+    if (!options.some((p) => p.id === randomWrong.id)) {
+      options.push(randomWrong);
+    }
+  }
+
+  // 3. Barajar opciones (Shuffle)
+  options.sort(() => Math.random() - 0.5);
+
+  // 4. Crear botones
+  options.forEach((poke) => {
+    const btn = document.createElement("button");
+    btn.textContent = poke.name;
+    btn.className = "game-btn";
+    btn.onclick = () => checkAnswer(poke, btn);
+    gameOptions.appendChild(btn);
+  });
+};
+
+function checkAnswer(selected, btnElement) {
+  // Revelar imagen
+  gameImg.classList.remove("silhouette");
+
+  // Bloquear todos los botones
+  const allBtns = document.querySelectorAll(".game-btn");
+  allBtns.forEach((b) => (b.disabled = true));
+
+  if (selected.id === correctAnswer.id) {
+    // ACIERTO
+    btnElement.classList.add("correct");
+    gameMessage.textContent = "¡Correcto! 🎉";
+    gameMessage.style.color = "#4CAF50";
+
+    // Reproducir sonido si existe
+    if (correctAnswer.sound) new Audio(correctAnswer.sound).play();
+  } else {
+    // ERROR
+    btnElement.classList.add("wrong");
+    gameMessage.textContent = `¡Oh no! Era ${correctAnswer.name}`;
+    gameMessage.style.color = "#ff5252";
+
+    // Resaltar la correcta para que sepa cuál era
+    allBtns.forEach((b) => {
+      if (b.textContent === correctAnswer.name) b.classList.add("correct");
+    });
+  }
+
+  nextRoundBtn.style.display = "inline-block";
+}
+// --- BOTÓN ALEATORIO (SORPRÉNDEME) ---
+const btnRandom = document.getElementById("btn-random");
+
+if (btnRandom) {
+  btnRandom.addEventListener("click", async () => {
+    // 1. Efecto visual de carga en el botón
+    btnRandom.textContent = "⏳";
+    btnRandom.disabled = true;
+
+    try {
+      // 2. Generar ID random (1 al 1025)
+      const randomId = Math.floor(Math.random() * 1025) + 1;
+
+      // 3. Fetch de los datos de ese Pokémon específico (reutilizamos lógica)
+      const [pokemonRes, speciesRes] = await Promise.all([
+        fetch(`https://pokeapi.co/api/v2/pokemon/${randomId}/`),
+        fetch(`https://pokeapi.co/api/v2/pokemon-species/${randomId}/`),
+      ]);
+
+      const pokemonData = await pokemonRes.json();
+      const speciesData = await speciesRes.json();
+      const entry =
+        speciesData.flavor_text_entries.find((e) => e.language.name === "es") ||
+        speciesData.flavor_text_entries.find((e) => e.language.name === "en");
+
+      // 4. Preparamos el objeto para el modal
+      const randomPoke = {
+        id: randomId,
+        name: pokemonData.name,
+        image: pokemonData.sprites.other["official-artwork"].front_default,
+        // shinyImage y megas los omitimos para hacerlo rápido, usará defaults
+        types: pokemonData.types.map((t) => t.type.name),
+        description: entry ? entry.flavor_text.replace(/[\n\f]/g, " ") : "...",
+        stats: pokemonData.stats,
+        sound: pokemonData.cries.latest,
+        genderRate: speciesData.gender_rate,
+      };
+
+      // 5. Generamos el HTML de tipos para el modal
+      const typesHtml = randomPoke.types
+        .map((type) => {
+          const iconUrl = `https://raw.githubusercontent.com/duiker101/pokemon-type-svg-icons/master/icons/${type}.svg`;
+          return `<span class="type-badge" style="background-color: ${badgeColors[type]}">
+          <img src="${iconUrl}" style="width: 14px; filter: brightness(0) invert(1);" /> ${typeTranslations[type] || type}
+        </span>`;
+        })
+        .join("");
+
+      // 6. Obtener color de fondo (usamos el primer tipo)
+      const bgColor = typeColors[randomPoke.types[0]] || "#f4f4f4";
+
+      // 7. ¡Abrir el modal!
+      openModal(randomPoke, typesHtml, bgColor);
+    } catch (error) {
+      console.error("Error al buscar random:", error);
+      alert("Error al buscar un Pokémon aleatorio. Intenta de nuevo.");
+    } finally {
+      // Restaurar el botón
+      btnRandom.textContent = "🎲";
+      btnRandom.disabled = false;
+    }
+  });
+}
