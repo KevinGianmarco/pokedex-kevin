@@ -331,7 +331,7 @@ function renderPokemons(list) {
       .join("");
 
     const isInTeam = myTeam.some((p) => p.id === poke.id);
-    const teamBtnText = isInTeam ? "En equipo ✅" : "Añadir +";
+    const teamBtnText = isInTeam ? "En equipo " : "Añadir +";
     const disabledAttr = isInTeam ? "disabled" : "";
 
     card.innerHTML = `
@@ -566,7 +566,7 @@ searchInput.addEventListener("input", async (e) => {
   if (query.length < 2) return;
 
   grid.innerHTML =
-    '<div class="loader" style="color:var(--text-color)">🔎 Buscando en todo el mundo...</div>';
+    '<div class="loader" style="color:var(--text-color)"> Buscando en todo el mundo...</div>';
 
   try {
     // Si la lista global aún no cargó, intentamos cargarla
@@ -732,73 +732,18 @@ function checkAnswer(selected, btnElement) {
 
   if (selected.id === correctAnswer.id) {
     btnElement.classList.add("correct");
-    gameMessage.textContent = "¡Correcto! 🎉";
+    gameMessage.textContent = "¡Correcto!";
     gameMessage.style.color = "#4CAF50";
     if (correctAnswer.sound) new Audio(correctAnswer.sound).play();
   } else {
     btnElement.classList.add("wrong");
-    gameMessage.textContent = `¡Oh no! Era ${correctAnswer.name}`;
+    gameMessage.textContent = `¡Fallaste! Era ${correctAnswer.name}`;
     gameMessage.style.color = "#ff5252";
     allBtns.forEach((b) => {
       if (b.textContent === correctAnswer.name) b.classList.add("correct");
     });
   }
   nextRoundBtn.style.display = "inline-block";
-}
-
-// --- BOTÓN ALEATORIO (SORPRÉNDEME) ---
-const btnRandom = document.getElementById("btn-random");
-
-if (btnRandom) {
-  btnRandom.addEventListener("click", async () => {
-    btnRandom.textContent = "⏳";
-    btnRandom.disabled = true;
-
-    try {
-      const randomId = Math.floor(Math.random() * 1025) + 1;
-      const [pokemonRes, speciesRes] = await Promise.all([
-        fetch(`https://pokeapi.co/api/v2/pokemon/${randomId}/`),
-        fetch(`https://pokeapi.co/api/v2/pokemon-species/${randomId}/`),
-      ]);
-
-      const pokemonData = await pokemonRes.json();
-      const speciesData = await speciesRes.json();
-      const entry =
-        speciesData.flavor_text_entries.find((e) => e.language.name === "es") ||
-        speciesData.flavor_text_entries.find((e) => e.language.name === "en");
-
-      const randomPoke = {
-        id: randomId,
-        name: pokemonData.name,
-        image: pokemonData.sprites.other["official-artwork"].front_default,
-        types: pokemonData.types.map((t) => t.type.name),
-        description: entry ? entry.flavor_text.replace(/[\n\f]/g, " ") : "...",
-        stats: pokemonData.stats,
-        sound: pokemonData.cries ? pokemonData.cries.latest : null,
-        genderRate: speciesData.gender_rate,
-        megas: [], // Simplificación para random
-        shinyImage: pokemonData.sprites.front_shiny,
-      };
-
-      const typesHtml = randomPoke.types
-        .map((type) => {
-          const iconUrl = `https://raw.githubusercontent.com/duiker101/pokemon-type-svg-icons/master/icons/${type}.svg`;
-          return `<span class="type-badge" style="background-color: ${badgeColors[type]}">
-          <img src="${iconUrl}" style="width: 14px; filter: brightness(0) invert(1);" /> ${typeTranslations[type] || type}
-        </span>`;
-        })
-        .join("");
-
-      const bgColor = typeColors[randomPoke.types[0]] || "#f4f4f4";
-      openModal(randomPoke, typesHtml, bgColor);
-    } catch (error) {
-      console.error("Error al buscar random:", error);
-      alert("Error al buscar un Pokémon aleatorio. Intenta de nuevo.");
-    } finally {
-      btnRandom.textContent = "🎲";
-      btnRandom.disabled = false;
-    }
-  });
 }
 
 // --- CARGA INICIAL DE NOMBRES ---
