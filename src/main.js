@@ -14,15 +14,15 @@ const modalTypes = document.getElementById("modal-types");
 const modalStats = document.getElementById("modal-stats");
 const modalGender = document.getElementById("modal-gender");
 
-// Referencias botones
+// ---Referencias botones---
 const modalTop = document.getElementById("modal-top");
 const shinyBtn = document.getElementById("btn-shiny");
 const megaBtn = document.getElementById("btn-mega");
 const soundBtn = document.getElementById("btn-sound");
 
 // --- ESTADO GLOBAL ---
-let allPokemons = []; // Guarda la generación actual
-let globalPokemonList = []; // Guarda los nombres de TODOS los Pokémon del mundo
+let allPokemons = [];
+let globalPokemonList = [];
 
 // --- DICCIONARIOS ---
 const typeColors = {
@@ -176,19 +176,6 @@ function addToTeam(pokemonId, event) {
     event.preventDefault();
   }
 
-  // Buscamos primero en allPokemons, si no está (porque vino del buscador global), lo buscamos en el grid actual si es posible
-  // Nota: Para simplificar, asumimos que si clickeaste el botón, el objeto "poke" existe en el contexto donde se renderizó.
-  // Pero como 'addToTeam' solo recibe ID, necesitamos una forma segura de obtener los datos.
-  // TRUCO: Si venimos de una búsqueda global, el array 'allPokemons' podría no tenerlo.
-  // Vamos a intentar buscarlo en 'allPokemons' (lista actual mostrada en pantalla).
-
-  // CORRECCIÓN: Si estamos filtrando, 'allPokemons' puede no tener el dato si venimos de otra región.
-  // Pero 'renderPokemons' usa una lista. Vamos a usar una variable global temporal o confiar en que el usuario
-  // no cambia de contexto tan rápido.
-  // MEJORA: Buscar en el array que se está mostrando actualmente.
-  // Sin embargo, para no complicar, usamos allPokemons. Si falla, es porque la lógica original dependía de ello.
-  // (En tu código original, allPokemons se sobrescribía con los resultados de búsqueda, así que ESTÁ BIEN).
-
   const poke = allPokemons.find((p) => p.id === pokemonId);
 
   if (!poke) return;
@@ -210,8 +197,8 @@ function addToTeam(pokemonId, event) {
     stats: poke.stats,
     types: poke.types,
     description: poke.description,
-    shinyImage: poke.shinyImage, // Guardamos shinyImage también por si acaso
-    megas: poke.megas, // Guardamos megas también
+    shinyImage: poke.shinyImage,
+    megas: poke.megas,
     genderRate: poke.genderRate,
     sound: poke.sound,
   };
@@ -300,11 +287,7 @@ async function fetchGeneration(genId) {
 }
 
 function renderPokemons(list) {
-  // Truco: Actualizamos allPokemons globalmente para que addToTeam funcione
-  // si es que venimos de una búsqueda
   if (list !== allPokemons) {
-    // Solo actualizamos la referencia si es una lista filtrada o buscada
-    // para que el botón de "Añadir a equipo" encuentre los datos
     allPokemons = list;
   }
 
@@ -554,22 +537,17 @@ window.closeModal = function () {
 searchInput.addEventListener("input", async (e) => {
   const query = e.target.value.toLowerCase().trim();
 
-  // 1. Si borras el texto, volvemos a la generación actual
   if (query.length === 0) {
-    // IMPORTANTE: Debemos volver a cargar la generación seleccionada si allPokemons cambió
-    // Pero como no tenemos la data original en memoria, lo más fácil es llamar al fetchGeneration con el valor del selector
     fetchGeneration(selector.value);
     return;
   }
 
-  // 2. Esperar al menos 2 letras
   if (query.length < 2) return;
 
   grid.innerHTML =
     '<div class="loader" style="color:var(--text-color)"> Buscando en todo el mundo...</div>';
 
   try {
-    // Si la lista global aún no cargó, intentamos cargarla
     if (!globalPokemonList || globalPokemonList.length === 0) {
       await initGlobalSearch();
     }
@@ -608,7 +586,6 @@ searchInput.addEventListener("input", async (e) => {
               (e) => e.language.name === "en",
             );
 
-          // Protección en Megas: Si falla un fetch de mega, no rompemos todo
           const megaVarieties = speciesData.varieties.filter((v) =>
             v.pokemon.name.includes("-mega"),
           );
@@ -619,7 +596,7 @@ searchInput.addEventListener("input", async (e) => {
                 const data = await res.json();
                 return { name: v.pokemon.name, data: data };
               } catch (err) {
-                return null; // Si falla una mega, la ignoramos
+                return null;
               }
             }),
           );
@@ -636,19 +613,18 @@ searchInput.addEventListener("input", async (e) => {
               ? entry.flavor_text.replace(/[\n\f]/g, " ")
               : "...",
             stats: pokemonData.stats,
-            // Protección en Sonido: Verificamos si existe 'cries'
+
             sound: pokemonData.cries ? pokemonData.cries.latest : null,
             genderRate: speciesData.gender_rate,
-            megas: megasData.filter((m) => m !== null), // Filtramos megas fallidas
+            megas: megasData.filter((m) => m !== null),
           };
         } catch (innerError) {
           console.warn("Error cargando un resultado individual:", innerError);
-          return null; // Si falla un Pokémon entero, lo ignoramos
+          return null;
         }
       }),
     );
 
-    // Filtramos los resultados nulos (los que fallaron)
     const validResults = resultsData.filter((p) => p !== null);
 
     renderPokemons(validResults);
@@ -662,7 +638,7 @@ selector.addEventListener("change", (e) => fetchGeneration(e.target.value));
 
 // Iniciar app
 fetchGeneration(1);
-initGlobalSearch(); // Cargar nombres en background
+initGlobalSearch();
 
 // --- LÓGICA DEL MINIJUEGO ---
 const gameOverlay = document.getElementById("game-overlay");
@@ -691,9 +667,6 @@ window.initGame = function () {
   gameImg.classList.add("silhouette");
   gameOptions.innerHTML = "";
 
-  // Si estamos en búsqueda global, allPokemons tiene solo 10 resultados.
-  // Para el juego, idealmente necesitamos más variedad.
-  // Pero usaremos lo que haya en pantalla para no complicar.
   if (allPokemons.length < 4) {
     gameMessage.textContent =
       "Necesitas cargar más Pokémon (o una región completa) para jugar.";

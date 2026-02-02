@@ -6,7 +6,6 @@
 }
 
 :root {
-  /* TEMA CLARO */
   --bg-color: #f4f4f4;
   --card-bg: #ffffff;
   --text-color: #333;
@@ -28,13 +27,12 @@ body {
   background-color: var(--bg-color);
   color: var(--text-color);
   margin: 0;
-  padding-bottom: 150px; /* Espacio para la barra de equipo */
+  padding-bottom: 150px;
   transition:
     background-color 0.3s,
     color 0.3s;
 }
 
-/* --- HEADER --- */
 header {
   background-color: #ff3e3e;
   color: white;
@@ -105,7 +103,6 @@ body.dark-mode #search-input {
   border: 1px solid #444;
 }
 
-/* --- GRID & CARDS --- */
 .grid-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -154,7 +151,6 @@ body.dark-mode .card {
   color: var(--text-color);
 }
 
-/* --- TIPOS (Badges) --- */
 .types {
   display: flex;
   flex-wrap: wrap;
@@ -186,7 +182,6 @@ body.dark-mode .card {
   display: block;
 }
 
-/* --- MODAL --- */
 .modal-overlay {
   display: none;
   position: fixed;
@@ -228,7 +223,6 @@ body.dark-mode .card {
   padding-bottom: 0;
 }
 
-/* IMAGEN DEL HÉROE (Unificada) */
 .pokemon-hero-img {
   width: 130px;
   height: 130px;
@@ -239,7 +233,6 @@ body.dark-mode .card {
   image-rendering: pixelated;
 }
 
-/* CONTENEDOR DE DATOS (Unificado) */
 .modal-data-container {
   background: var(--card-bg);
   padding: 45px 20px 20px 20px;
@@ -253,12 +246,11 @@ body.dark-mode .card {
 
 .close-btn {
   position: absolute;
-  /* ⬆️ ANTES: 15px | AHORA: 10px (Lo subimos un poco) */
+
   top: 10px;
-  /* ➡️ ANTES: 15px | AHORA: 10px (Lo pegamos más a la derecha) */
+
   right: 2px;
 
-  /* El resto sigue igual... */
   background: rgba(0, 0, 0, 0.3);
   color: white;
   border: none;
@@ -281,7 +273,6 @@ body.dark-mode .card {
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
-/* --- BOTONES DE ACCIÓN (SHINY / MEGA) --- */
 .action-buttons-container {
   position: absolute;
   top: 15px;
@@ -333,7 +324,6 @@ body.dark-mode .card {
   transform: scale(1.2) rotate(15deg);
 }
 
-/* ICONOS DENTRO DE LOS BOTONES (Unificado y arreglado fondo blanco) */
 .btn-icon {
   width: 24px;
   height: 24px;
@@ -341,11 +331,10 @@ body.dark-mode .card {
   vertical-align: middle;
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
   transition: transform 0.2s;
-  /* ✨ Truco para quitar el fondo blanco: */
+
   mix-blend-mode: multiply;
 }
 
-/* --- DETALLES MODAL --- */
 .modal-header-row {
   display: flex;
   justify-content: center;
@@ -492,7 +481,6 @@ body.dark-mode .card {
   font-weight: 600;
 }
 
-/* --- TEAM BUILDER --- */
 .team-dock {
   position: fixed;
   bottom: 0;
@@ -645,7 +633,6 @@ body.dark-mode .card {
   color: white;
 }
 
-/* --- MINIJUEGO --- */
 .game-launcher {
   background: #ffcb05;
   color: #3b4cca;
@@ -678,7 +665,6 @@ body.dark-mode .card {
   color: white;
 }
 
-/* CORRECCIÓN DEL SPOILER */
 .silhouette {
   filter: brightness(0);
   transition: none !important;
@@ -751,7 +737,6 @@ body.dark-mode .card {
   font-size: 1rem;
 }
 
-/* ANIMACIÓN ENTRADA */
 @keyframes fadeInUp {
   from {
     opacity: 0;
