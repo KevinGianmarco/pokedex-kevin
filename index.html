@@ -11,18 +11,37 @@
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"
       rel="stylesheet"
     />
-
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
   <body>
     <div id="app">
       <header>
-       <div class="pokeballs-container">
-         <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" class="poke-icon" alt="Pokéball" title="Pokéball">
-         <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/great-ball.png" class="poke-icon" alt="Superball" title="Superball">
-         <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png" class="poke-icon" alt="Ultraball" title="Ultraball">
-         <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/master-ball.png" class="poke-icon" alt="Masterball" title="Masterball">
-       </div>
+        <div class="pokeballs-container">
+          <img
+            src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png"
+            class="poke-icon"
+            alt="Pokéball"
+            title="Pokéball"
+          />
+          <img
+            src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/great-ball.png"
+            class="poke-icon"
+            alt="Superball"
+            title="Superball"
+          />
+          <img
+            src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png"
+            class="poke-icon"
+            alt="Ultraball"
+            title="Ultraball"
+          />
+          <img
+            src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/master-ball.png"
+            class="poke-icon"
+            alt="Masterball"
+            title="Masterball"
+          />
+        </div>
         <h1>Pokédex Kevin</h1>
 
         <div class="controls">
@@ -31,8 +50,9 @@
             id="search-input"
             placeholder=" Buscar Pokémon..."
           />
-<button id="btn-random" class="random-btn" title="¡Pokémon Aleatorio!">🎲</button>
-          <button id="btn-game" class="game-launcher">¿Quién es este Pokemón?</button>
+          <button id="btn-game" class="game-launcher">
+            ¿Quién es este Pokemón?
+          </button>
 
           <div class="select-container">
             <label for="gen-selector">Región:</label>
@@ -43,10 +63,9 @@
               <option value="4">Sinnoh (Gen 4)</option>
               <option value="5">Teselia (Gen 5)</option>
               <option value="6">Kalos (Gen 6)</option>
-              <option value="7">Alola  (Gen 7)</option>
+              <option value="7">Alola (Gen 7)</option>
               <option value="8">Galar (Gen 8)</option>
               <option value="9">Paldea (Gen 9)</option>
-              
             </select>
           </div>
         </div>
@@ -63,9 +82,14 @@
           <button class="close-btn" onclick="closeModal()">×</button>
 
           <div class="action-buttons-container">
-            <button id="btn-shiny" class="shiny-toggle">✨ Shiny: OFF</button>
+            <button id="btn-shiny" class="shiny-toggle">
+              <img src="../img/shiny.png" class="btn-icon" alt="Shiny" />
+              <span id="shiny-label">Shiny: OFF</span>
+            </button>
+
             <button id="btn-mega" class="mega-toggle" style="display: none">
-              🧬 Mega
+              <img src="../img/mega.jpg" class="btn-icon" alt="Mega" />
+              <span id="mega-label">Mega Evolución</span>
             </button>
           </div>
 
@@ -75,18 +99,12 @@
         <div class="modal-data-container">
           <div class="modal-header-row">
             <h2 id="modal-name">Bulbasaur</h2>
-            <button id="btn-sound" class="sound-button" title="Escuchar">
-              🔊
+            <button id="btn-sound" class="sound-btn">
+              <img src="../img/icono.png" width="20" alt="Sonido" />
             </button>
           </div>
 
           <span id="modal-id">#001</span>
-
-          <div
-            id="modal-types"
-            class="types"
-            style="justify-content: center; margin-bottom: 20px"
-          ></div>
 
           <div
             id="modal-types"
@@ -105,6 +123,46 @@
       </div>
     </div>
 
+    <div class="team-dock">
+      <div class="team-header">
+        <div class="team-title-wrapper">
+          <input
+            type="text"
+            id="team-name"
+            value="Mi Equipo"
+            maxlength="15"
+            placeholder="Nombre del Equipo"
+          />
+          <span id="team-count">0/6</span>
+        </div>
+        <button onclick="clearTeam()" class="clear-btn">Limpiar</button>
+      </div>
+      <div class="team-slots" id="team-slots"></div>
+    </div>
+
+    <div id="game-overlay" class="modal-overlay">
+      <div class="game-card">
+        <button class="close-btn" onclick="closeGame()">×</button>
+        <h2 class="game-title">¿Quién es ese Pokémon?</h2>
+
+        <div class="game-image-container">
+          <img id="game-img" src="" alt="Pokemon Oculto" class="silhouette" />
+        </div>
+
+        <div id="game-options" class="game-options"></div>
+
+        <p id="game-message" class="game-message"></p>
+        <button
+          id="btn-next-round"
+          class="next-round-btn"
+          onclick="initGame()"
+          style="display: none"
+        >
+          Siguiente ▶
+        </button>
+      </div>
+    </div>
+
     <script type="module" src="/src/main.js"></script>
 
     <style>
@@ -115,7 +173,6 @@
         gap: 10px;
         margin-bottom: 5px;
       }
-
       #modal-name {
         margin: 0;
         font-size: 2rem;
@@ -123,7 +180,6 @@
         font-weight: 700;
         color: var(--text-color);
       }
-
       #modal-id {
         color: #aaa;
         font-weight: bold;
@@ -131,7 +187,6 @@
         margin-bottom: 15px;
         font-size: 1.1rem;
       }
-
       .info-title {
         font-size: 0.9rem;
         color: var(--text-secondary);
@@ -140,48 +195,15 @@
         letter-spacing: 1px;
         font-weight: 600;
       }
-
       #modal-desc {
         font-size: 0.95rem;
         color: var(--text-secondary);
         line-height: 1.6;
       }
-
       .modal-data-container {
         background-color: var(--card-bg);
         transition: background-color 0.3s;
       }
     </style>
-    <div class="team-dock">
-  <div class="team-header">
-    <div class="team-title-wrapper">
-        <input type="text" id="team-name" value="Mi Equipo" maxlength="15" placeholder="Nombre del Equipo">
-        <span id="team-count">0/6</span>
-    </div>
-
-    <button onclick="clearTeam()" class="clear-btn">Limpiar</button>
-</div>
-  <div class="team-slots" id="team-slots">
-    </div>
-</div>
-
-<script type="module" src="/src/main.js"></script>
-</body>
-<div id="game-overlay" class="modal-overlay">
-  <div class="game-card">
-    <button class="close-btn" onclick="closeGame()">×</button>
-    <h2 class="game-title">¿Quién es ese Pokémon?</h2>
-    
-    <div class="game-image-container">
-      <img id="game-img" src="" alt="Pokemon Oculto" class="silhouette">
-    </div>
-
-    <div id="game-options" class="game-options">
-      </div>
-
-    <p id="game-message" class="game-message"></p>
-    <button id="btn-next-round" class="next-round-btn" onclick="initGame()" style="display:none;">Siguiente ▶</button>
-  </div>
-</div>
   </body>
 </html>

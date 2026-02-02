@@ -28,11 +28,13 @@ body {
   background-color: var(--bg-color);
   color: var(--text-color);
   margin: 0;
+  padding-bottom: 150px; /* Espacio para la barra de equipo */
   transition:
     background-color 0.3s,
     color 0.3s;
 }
 
+/* --- HEADER --- */
 header {
   background-color: #ff3e3e;
   color: white;
@@ -53,9 +55,23 @@ header h1 {
   gap: 10px;
 }
 
-.logo {
-  width: 40px;
-  height: 40px;
+.pokeballs-container {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-right: 15px;
+}
+
+.poke-icon {
+  width: 35px;
+  height: 35px;
+  cursor: pointer;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.poke-icon:hover {
+  transform: rotate(20deg) scale(1.2);
+  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
 }
 
 .controls {
@@ -63,25 +79,6 @@ header h1 {
   gap: 15px;
   align-items: center;
   flex-wrap: wrap;
-}
-
-.theme-btn {
-  background: none;
-  border: 2px solid rgba(255, 255, 255, 0.5);
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  cursor: pointer;
-  font-size: 1.1rem;
-  color: white;
-  transition: all 0.3s;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.theme-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: rotate(15deg);
 }
 
 .select-container select {
@@ -108,13 +105,14 @@ body.dark-mode #search-input {
   border: 1px solid #444;
 }
 
+/* --- GRID & CARDS --- */
 .grid-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 20px;
   padding: 2rem;
   max-width: 1200px;
-  margin: 0 auto;
+  margin: 0 auto 50px auto;
 }
 
 .card {
@@ -156,6 +154,7 @@ body.dark-mode .card {
   color: var(--text-color);
 }
 
+/* --- TIPOS (Badges) --- */
 .types {
   display: flex;
   flex-wrap: wrap;
@@ -176,7 +175,6 @@ body.dark-mode .card {
   font-weight: bold;
   text-transform: capitalize;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-
   width: fit-content;
   flex-grow: 0;
   line-height: 1.2;
@@ -188,6 +186,7 @@ body.dark-mode .card {
   display: block;
 }
 
+/* --- MODAL --- */
 .modal-overlay {
   display: none;
   position: fixed;
@@ -229,63 +228,7 @@ body.dark-mode .card {
   padding-bottom: 0;
 }
 
-.pokemon-hero-img {
-  width: 150px;
-  height: 150px;
-
-  margin-bottom: -45px;
-
-  z-index: 2;
-  filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.3));
-  transition: transform 0.3s ease;
-  image-rendering: pixelated;
-}
-
-.modal-data-container {
-  background: var(--card-bg);
-
-  padding: 60px 20px 20px 20px;
-
-  text-align: center;
-  border-radius: 30px 30px 0 0;
-  margin-top: -30px;
-  z-index: 1;
-  flex-grow: 1;
-  transition: background-color 0.3s;
-}
-/* Botón Cerrar (X) */
-.close-btn {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-
-  /* ✅ CAMBIO CLAVE: Fondo oscuro semi-transparente para contraste */
-  background: rgba(0, 0, 0, 0.3);
-  color: white;
-
-  border: none;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  font-size: 1.4rem;
-  line-height: 1;
-  cursor: pointer;
-  z-index: 20;
-  transition: all 0.2s ease;
-
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.close-btn:hover {
-  background: rgba(0, 0, 0, 0.6);
-  transform: scale(1.1) rotate(90deg);
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-}
-
+/* IMAGEN DEL HÉROE (Unificada) */
 .pokemon-hero-img {
   width: 130px;
   height: 130px;
@@ -296,6 +239,49 @@ body.dark-mode .card {
   image-rendering: pixelated;
 }
 
+/* CONTENEDOR DE DATOS (Unificado) */
+.modal-data-container {
+  background: var(--card-bg);
+  padding: 45px 20px 20px 20px;
+  text-align: center;
+  border-radius: 25px 25px 0 0;
+  margin-top: -20px;
+  z-index: 1;
+  flex-grow: 1;
+  transition: background-color 0.3s;
+}
+
+.close-btn {
+  position: absolute;
+  /* ⬆️ ANTES: 15px | AHORA: 10px (Lo subimos un poco) */
+  top: 10px;
+  /* ➡️ ANTES: 15px | AHORA: 10px (Lo pegamos más a la derecha) */
+  right: 2px;
+
+  /* El resto sigue igual... */
+  background: rgba(0, 0, 0, 0.3);
+  color: white;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 20;
+  transition: all 0.2s ease;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.close-btn:hover {
+  background: rgba(0, 0, 0, 0.6);
+  transform: scale(1.1) rotate(90deg);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+/* --- BOTONES DE ACCIÓN (SHINY / MEGA) --- */
 .action-buttons-container {
   position: absolute;
   top: 15px;
@@ -308,10 +294,8 @@ body.dark-mode .card {
 .shiny-toggle,
 .mega-toggle {
   position: relative;
-
   background: white;
   color: #333;
-
   border: none;
   padding: 6px 14px;
   border-radius: 20px;
@@ -319,8 +303,10 @@ body.dark-mode .card {
   cursor: pointer;
   font-weight: 800;
   transition: all 0.2s;
-
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .shiny-toggle:hover,
@@ -338,21 +324,28 @@ body.dark-mode .card {
 
 .mega-toggle.active {
   background: linear-gradient(135deg, #a742f5, #f542bf);
-  color: white; /* Texto blanco aquí sí, porque el fondo es oscuro */
-  box-shadow: 0 0 15px rgba(245, 66, 191, 0.6); /* Resplandor rosa */
+  color: white;
+  box-shadow: 0 0 15px rgba(245, 66, 191, 0.6);
 }
 
-.modal-data-container {
-  background: var(--card-bg);
-  padding: 45px 20px 20px 20px;
-  text-align: center;
-  border-radius: 25px 25px 0 0;
-  margin-top: -20px;
-  z-index: 1;
-  flex-grow: 1;
-  transition: background-color 0.3s;
+.shiny-toggle:hover .btn-icon,
+.mega-toggle:hover .btn-icon {
+  transform: scale(1.2) rotate(15deg);
 }
 
+/* ICONOS DENTRO DE LOS BOTONES (Unificado y arreglado fondo blanco) */
+.btn-icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+  vertical-align: middle;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
+  transition: transform 0.2s;
+  /* ✨ Truco para quitar el fondo blanco: */
+  mix-blend-mode: multiply;
+}
+
+/* --- DETALLES MODAL --- */
 .modal-header-row {
   display: flex;
   justify-content: center;
@@ -383,20 +376,6 @@ body.dark-mode .card {
   margin-bottom: 20px;
 }
 
-.sound-button {
-  background: none;
-  border: none;
-  font-size: 1.4rem;
-  cursor: pointer;
-  transition: transform 0.2s;
-  padding: 0 5px;
-  color: var(--text-secondary);
-}
-.sound-button:hover {
-  transform: scale(1.1) rotate(-10deg);
-  color: #ff3e3e;
-}
-
 .stats-container {
   background: var(--stats-bg);
   padding: 15px;
@@ -404,39 +383,28 @@ body.dark-mode .card {
   text-align: left;
 }
 
-.stat-row {
-  display: flex;
-  align-items: center;
-  margin-bottom: 6px;
-  font-size: 0.85rem;
+/* BOTÓN DE SONIDO (Pokéflauta) */
+#btn-sound {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
-.stat-label {
-  width: 70px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  font-size: 0.75rem;
-  text-transform: uppercase;
+
+#btn-sound img {
+  width: 40px;
+  height: auto;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
-.stat-num {
-  width: 30px;
-  text-align: right;
-  font-size: 0.8rem;
-  font-weight: bold;
-  color: var(--text-color);
-  margin-right: 8px;
+
+#btn-sound:hover {
+  transform: scale(1.2) rotate(-10deg);
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
 }
-.stat-bar-bg {
-  flex-grow: 1;
-  background-color: var(--bg-color);
-  height: 6px;
-  border-radius: 10px;
-  overflow: hidden;
-}
-.stat-bar-fill {
-  height: 100%;
-  border-radius: 10px;
-  width: 0;
-  transition: width 1s ease-out;
+
+#btn-sound:active {
+  transform: scale(0.9);
 }
 
 .favorite-btn {
@@ -458,25 +426,17 @@ body.dark-mode .card {
     background 0.2s;
   z-index: 5;
 }
+
 .favorite-btn:hover {
   transform: scale(1.2);
   background: white;
 }
+
 .favorite-btn.active {
   color: red;
 }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-/* --- GÉNERO (NUEVO DISEÑO) --- */
+/* --- GÉNERO --- */
 .gender-container {
   display: flex;
   flex-direction: column;
@@ -486,7 +446,6 @@ body.dark-mode .card {
   width: 100%;
 }
 
-/* El texto de arriba (ej: "♂ 87.5% | ♀ 12.5%") */
 .gender-text {
   font-size: 0.8rem;
   color: var(--text-secondary);
@@ -494,6 +453,7 @@ body.dark-mode .card {
   display: flex;
   gap: 15px;
 }
+
 .male-text {
   color: #6390f0;
 }
@@ -501,31 +461,28 @@ body.dark-mode .card {
   color: #f95587;
 }
 
-/* La Barra Visual */
 .gender-bar {
-  width: 200px; /* Ancho fijo para que se vea uniforme */
+  width: 200px;
   height: 8px;
-  background-color: #eee; /* Fondo gris por defecto */
+  background-color: #eee;
   border-radius: 10px;
   overflow: hidden;
   position: relative;
   display: flex;
 }
 
-/* Segmentos de color dentro de la barra */
 .bar-male {
   height: 100%;
-  background-color: #6390f0; /* Azul */
+  background-color: #6390f0;
   transition: width 0.5s ease;
 }
 
 .bar-female {
   height: 100%;
-  background-color: #f95587; /* Rosa */
+  background-color: #f95587;
   transition: width 0.5s ease;
 }
 
-/* Estilo para Sin Género */
 .gender-less-badge {
   background: #777;
   color: white;
@@ -534,7 +491,8 @@ body.dark-mode .card {
   font-size: 0.8rem;
   font-weight: 600;
 }
-/* --- BARRA DE EQUIPO (TEAM BUILDER) --- */
+
+/* --- TEAM BUILDER --- */
 .team-dock {
   position: fixed;
   bottom: 0;
@@ -549,7 +507,6 @@ body.dark-mode .card {
   transition: transform 0.3s ease;
 }
 
-/* En modo oscuro */
 .dark-mode .team-dock {
   background: #2d2d2d;
   box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5);
@@ -573,7 +530,6 @@ body.dark-mode .card {
   margin: 0 auto;
 }
 
-/* Las "Pokéballs" o huecos del equipo */
 .team-slot {
   width: 60px;
   height: 60px;
@@ -598,7 +554,6 @@ body.dark-mode .card {
   object-fit: contain;
 }
 
-/* Botón X para borrar */
 .slot-remove {
   position: absolute;
   top: -5px;
@@ -612,11 +567,11 @@ body.dark-mode .card {
   display: flex;
   justify-content: center;
   align-items: center;
-  display: none; /* Oculto por defecto */
+  display: none;
 }
 
 .team-slot:hover .slot-remove {
-  display: flex; /* Mostrar al pasar el mouse */
+  display: flex;
 }
 
 .add-team-btn {
@@ -635,13 +590,13 @@ body.dark-mode .card {
   background-color: #ccc;
   cursor: not-allowed;
 }
-/* Botón Limpiar Equipo */
+
 .clear-btn {
-  background-color: #ff5252; /* Rojo moderno */
+  background-color: #ff5252;
   color: white;
   border: none;
   padding: 8px 16px;
-  border-radius: 20px; /* Forma de píldora */
+  border-radius: 20px;
   font-family: "Poppins", sans-serif;
   font-weight: 600;
   font-size: 0.85rem;
@@ -653,18 +608,16 @@ body.dark-mode .card {
   gap: 5px;
 }
 
-/* Efecto al pasar el mouse */
 .clear-btn:hover {
-  background-color: #ff1744; /* Rojo más intenso */
-  transform: translateY(-2px); /* Se levanta un poco */
+  background-color: #ff1744;
+  transform: translateY(-2px);
   box-shadow: 0 6px 12px rgba(255, 82, 82, 0.3);
 }
 
-/* Efecto al hacer clic */
 .clear-btn:active {
-  transform: scale(0.95); /* Se encoge un poco */
+  transform: scale(0.95);
 }
-/* --- TÍTULO EDITABLE DEL EQUIPO --- */
+
 .team-title-wrapper {
   display: flex;
   align-items: center;
@@ -674,39 +627,28 @@ body.dark-mode .card {
 #team-name {
   background: transparent;
   border: none;
-  border-bottom: 2px solid transparent; /* Invisible hasta que haces clic */
+  border-bottom: 2px solid transparent;
   font-family: "Poppins", sans-serif;
   font-size: 1.2rem;
   font-weight: 700;
   color: #333;
-  width: 160px; /* Ancho fijo para que no rompa el diseño */
+  width: 160px;
   transition: all 0.3s ease;
 }
 
-/* Efecto al hacer clic para editar */
 #team-name:focus {
   outline: none;
-  border-bottom-color: #ff5252; /* Línea roja moderna */
+  border-bottom-color: #ff5252;
 }
 
-/* Soporte para modo oscuro */
 .dark-mode #team-name {
   color: white;
 }
-/* --- CORRECCIÓN DE ESPACIO FINAL --- */
-/* Agregamos espacio extra al fondo para que la barra no tape nada */
-body {
-  padding-bottom: 150px; /* Suficiente espacio para la barra de equipo */
-}
 
-/* Opcional: Si usas el grid, también asegúrate */
-#pokemon-grid {
-  margin-bottom: 50px;
-}
 /* --- MINIJUEGO --- */
 .game-launcher {
-  background: #ffcb05; /* Amarillo Pokémon */
-  color: #3b4cca; /* Azul Pokémon */
+  background: #ffcb05;
+  color: #3b4cca;
   border: none;
   padding: 8px 15px;
   border-radius: 20px;
@@ -736,19 +678,15 @@ body {
   color: white;
 }
 
-/* El truco de la silueta */
-/* --- CORRECCIÓN DEL SPOILER --- */
-
-/* 1. Busca tu clase .silhouette y DÉJALA ASÍ: */
+/* CORRECCIÓN DEL SPOILER */
 .silhouette {
   filter: brightness(0);
-  transition: none !important; /* 🛑 EL CAMBIO CLAVE: Se pone negro al instante */
+  transition: none !important;
   pointer-events: none;
 }
 
-/* 2. Agrega esto nuevo para que la magia suave solo ocurra al ganar: */
 #game-img {
-  transition: filter 0.5s ease; /* ✨ Solo anima cuando vuelve el color */
+  transition: filter 0.5s ease;
 }
 
 .game-image-container {
@@ -790,7 +728,6 @@ body {
   background: #f0f0f0;
 }
 
-/* Colores de respuesta */
 .game-btn.correct {
   background: #4caf50 !important;
   color: white;
@@ -813,50 +750,15 @@ body {
   cursor: pointer;
   font-size: 1rem;
 }
-/* --- BOTÓN ALEATORIO --- */
-.random-btn {
-  background-color: #9c27b0; /* Morado vibrante */
-  color: white;
-  border: none;
-  font-size: 1.5rem;
-  width: 45px;
-  height: 45px;
-  border-radius: 50%; /* Redondo */
-  cursor: pointer;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Efecto rebote */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
 
-.random-btn:hover {
-  transform: rotate(180deg) scale(1.1); /* Gira y crece al pasar el mouse */
-  background-color: #7b1fa2;
-}
-
-.random-btn:active {
-  transform: scale(0.9);
-}
-/* Botón Descargar Equipo */
-.download-btn {
-  background-color: #2196f3; /* Azul moderno */
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-family: "Poppins", sans-serif;
-  font-weight: 600;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 6px rgba(33, 150, 243, 0.2);
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.download-btn:hover {
-  background-color: #1976d2;
-  transform: translateY(-2px);
+/* ANIMACIÓN ENTRADA */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
